@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Andrey.dev | Desenvolvedor Full Stack</title>
+<meta name="description" content="Sites, landing pages e sistemas sob medida. Fale comigo pelo WhatsApp e peça um orçamento.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a0a0a'/%3E%3Cg fill='none' stroke='%23ededed' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M13 49 L27 15 L41 49'/%3E%3Cpath d='M18 37 H36'/%3E%3C/g%3E%3Ccircle cx='51' cy='49' r='4.2' fill='%232ee6a6'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#0a0a0a">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --card: #101010;
+    --border: #232323;
+    --text: #ededed;
+    --muted: #8a8a8a;
+    --accent: #2ee6a6;      /* único detalhe de cor: cursor e status */
+    --grid: rgba(255, 255, 255, .035);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; color-scheme: dark; }
+  body {
+    min-height: 100vh; background: var(--bg); color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6; overflow-x: hidden;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace; }
+
+  /* fundo: grade discreta + brilho branco que segue o mouse */
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -2; pointer-events: none;
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 15%, #000 25%, transparent 75%);
+  }
+  #glow {
+    position: fixed; width: 480px; height: 480px; left: 0; top: 0; z-index: -1; pointer-events: none;
+    border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.07), transparent 65%);
+  }
+  #progress {
+    position: fixed; top: 0; left: 0; right: 0; height: 2px; z-index: 50; background: var(--text);
+    transform-origin: 0 50%; transform: scaleX(0);
+  }
+
+  .wrap { width: 100%; max-width: 860px; margin: 0 auto; padding: 24px 20px 56px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 72px; font-size: 13px; color: var(--muted); }
+  .top .brand { color: var(--text); font-weight: 600; }
+  .status { display: flex; align-items: center; gap: 8px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 50% { opacity: .35; } }
+
+  /* hero com digitação */
+  .hero { margin-bottom: 72px; }
+  h1 { font-size: clamp(40px, 9vw, 84px); letter-spacing: -3px; line-height: 1; font-weight: 700; min-height: 1.05em; }
+  .tagline { margin-top: 22px; font-size: clamp(16px, 2.4vw, 20px); color: var(--muted); max-width: 560px; }
+  .cursor { display: inline-block; width: .55em; height: 1em; margin-left: 4px; background: var(--accent); vertical-align: -0.12em; animation: blink 1s steps(1) infinite; }
+  h1 .cursor { height: .8em; width: .4em; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .dot-accent { color: var(--accent); }
+  .muted { color: var(--muted); }
+  .rotator { margin-top: 20px; font-size: clamp(17px, 3vw, 24px); min-height: 1.7em; color: var(--text); }
+  .rotator .prompt { color: var(--muted); }
+  .rotator .cursor { height: 1.05em; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 12px;
+    text-decoration: none; font-weight: 600; font-size: 15px; border: 1px solid var(--border);
+    background: transparent; color: var(--text); will-change: transform; transition: border-color .15s, background .15s;
+  }
+  .btn:hover { border-color: var(--text); }
+  .btn.primary { background: var(--text); color: #0a0a0a; border-color: var(--text); }
+  .btn.primary:hover { background: #fff; }
+  .btn svg { width: 20px; height: 20px; flex: none; fill: currentColor; }
+
+  /* ticker */
+  .ticker { overflow: hidden; border-block: 1px solid var(--border); padding: 14px 0; margin-bottom: 72px;
+    mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
+  .ticker-track { display: flex; gap: 44px; width: max-content; animation: slide 30s linear infinite; }
+  .ticker:hover .ticker-track { animation-play-state: paused; }
+  .ticker span { font-size: 14px; color: var(--muted); white-space: nowrap; }
+  .ticker span b { color: var(--text); font-weight: 500; margin-right: 8px; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  .section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 22px; }
+  .section-title h2 { font-size: 22px; letter-spacing: -.5px; font-weight: 600; }
+  .section-title h2::before { content: "// "; color: var(--muted); font-family: ui-monospace, Menlo, Consolas, monospace; }
+  .section-title small { color: var(--muted); font-size: 13px; }
+
+  /* vitrine */
+  .showcase { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; margin-bottom: 72px; perspective: 1000px; }
+  .card {
+    position: relative; display: block; text-decoration: none; color: var(--text);
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 24px;
+    overflow: hidden; transform-style: preserve-3d; will-change: transform; transition: border-color .2s;
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .25s;
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,.08), transparent 70%);
+  }
+  .card:hover::before { opacity: 1; }
+  .card:hover { border-color: #4a4a4a; }
+  .card .tag { font-size: 11px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; display: inline-block; }
+  .card h3 { margin: 18px 0 8px; font-size: 20px; letter-spacing: -.3px; }
+  .card p { color: var(--muted); font-size: 14px; }
+  .card .go { display: inline-block; margin-top: 20px; font-size: 13px; color: var(--text); }
+
+  /* contatos */
+  .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 48px; }
+  .link {
+    display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 14px 16px; text-decoration: none; color: var(--text); will-change: transform; transition: border-color .15s;
+  }
+  .link:hover { border-color: #4a4a4a; }
+  .link .ico { width: 40px; height: 40px; border-radius: 10px; flex: none; display: grid; place-items: center;
+    background: var(--bg); border: 1px solid var(--border); font-size: 13px; font-weight: 700; }
+  .link .ico svg { width: 22px; height: 22px; fill: currentColor; }
+  .link .t { font-weight: 600; font-size: 15px; }
+  .link .d { color: var(--muted); font-size: 13px; }
+
+  footer { text-align: center; color: var(--muted); font-size: 12px; }
+
+  /* estado inicial das animações: só se o Motion carregar */
+  html.motion-ready .reveal { opacity: 0; transform: translateY(24px); }
+
+  @media (max-width: 600px) { .top { margin-bottom: 48px; } .hero { margin-bottom: 52px; } }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track, .dot { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+  <!-- ícone do WhatsApp (seu arquivo SVG), reaproveitado nos botões -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="wa" viewBox="0 0 24 24"><path d="M12.23,19h0A7.12,7.12,0,0,1,8.8,18.1L5,19.1l1-3.72a7.11,7.11,0,0,1-1-3.58A7.18,7.18,0,1,1,12.23,19Zm0-13.13A6,6,0,0,0,7.18,15l.14.23-.6,2.19L9,16.8l.22.13a6,6,0,0,0,3,.83h0a6,6,0,0,0,6-6,6,6,0,0,0-6-6Zm3.5,8.52a1.82,1.82,0,0,1-1.21.85,2.33,2.33,0,0,1-1.12-.07,8.9,8.9,0,0,1-1-.38,8,8,0,0,1-3.06-2.7,3.48,3.48,0,0,1-.73-1.85,2,2,0,0,1,.63-1.5.65.65,0,0,1,.48-.22H10c.11,0,.26,0,.4.31s.51,1.24.56,1.33a.34.34,0,0,1,0,.31,1.14,1.14,0,0,1-.18.3c-.09.11-.19.24-.27.32s-.18.18-.08.36a5.56,5.56,0,0,0,1,1.24,5,5,0,0,0,1.44.89c.18.09.29.08.39,0s.45-.52.57-.7.24-.15.4-.09,1.05.49,1.23.58.29.13.34.21A1.56,1.56,0,0,1,15.73,14.36Z"/></symbol>
+    <!-- LinkedIn e GitHub (seus arquivos SVG), com a cor do texto -->
+    <symbol id="li" viewBox="0 0 32 32"><path d="M28.778 1.004h-25.56c-0.008-0-0.017-0-0.027-0-1.199 0-2.172 0.964-2.186 2.159v25.672c0.014 1.196 0.987 2.161 2.186 2.161 0.010 0 0.019-0 0.029-0h25.555c0.008 0 0.018 0 0.028 0 1.2 0 2.175-0.963 2.194-2.159l0-0.002v-25.67c-0.019-1.197-0.994-2.161-2.195-2.161-0.010 0-0.019 0-0.029 0h0.001zM9.9 26.562h-4.454v-14.311h4.454zM7.674 10.293c-1.425 0-2.579-1.155-2.579-2.579s1.155-2.579 2.579-2.579c1.424 0 2.579 1.154 2.579 2.578v0c0 0.001 0 0.002 0 0.004 0 1.423-1.154 2.577-2.577 2.577-0.001 0-0.002 0-0.003 0h0zM26.556 26.562h-4.441v-6.959c0-1.66-0.034-3.795-2.314-3.795-2.316 0-2.669 1.806-2.669 3.673v7.082h-4.441v-14.311h4.266v1.951h0.058c0.828-1.395 2.326-2.315 4.039-2.315 0.061 0 0.121 0.001 0.181 0.003l-0.009-0c4.5 0 5.332 2.962 5.332 6.817v7.855z"/></symbol>
+    <symbol id="gh" viewBox="6 6 58 58"><path d="M58.3067362,21.4281798 C55.895743,17.2972267 52.6253846,14.0267453 48.4948004,11.615998 C44.3636013,9.20512774 39.8535636,8 34.9614901,8 C30.0700314,8 25.5585181,9.20549662 21.4281798,11.615998 C17.2972267,14.0266224 14.0269912,17.2972267 11.615998,21.4281798 C9.20537366,25.5590099 8,30.0699084 8,34.9607523 C8,40.8357654 9.71405782,46.1187277 13.1430342,50.8109917 C16.5716416,55.5036246 21.0008949,58.7507436 26.4304251,60.5527176 C27.0624378,60.6700211 27.5302994,60.5875152 27.8345016,60.3072901 C28.1388268,60.0266961 28.290805,59.6752774 28.290805,59.2545094 C28.290805,59.1842994 28.2847799,58.5526556 28.2730988,57.3588401 C28.2610487,56.1650247 28.2553926,55.1235563 28.2553926,54.2349267 L27.4479164,54.3746089 C26.9330843,54.468919 26.2836113,54.5088809 25.4994975,54.4975686 C24.7157525,54.4866252 23.9021284,54.4044881 23.0597317,54.2517722 C22.2169661,54.1004088 21.4330982,53.749359 20.7075131,53.1993604 C19.982297,52.6493618 19.4674649,51.9294329 19.1631397,51.0406804 L18.8120898,50.2328353 C18.5780976,49.6950097 18.2097104,49.0975487 17.7064365,48.4426655 C17.2031625,47.7871675 16.6942324,47.3427912 16.1794003,47.108799 L15.9336039,46.9328437 C15.7698216,46.815909 15.6178435,46.6748743 15.4773006,46.511215 C15.3368806,46.3475556 15.2317501,46.1837734 15.1615401,46.0197452 C15.0912072,45.855594 15.1494901,45.7209532 15.3370036,45.6153308 C15.5245171,45.5097084 15.8633939,45.4584343 16.3551097,45.4584343 L17.0569635,45.5633189 C17.5250709,45.6571371 18.104088,45.9373622 18.7947525,46.4057156 C19.4850481,46.8737001 20.052507,47.4821045 20.4972521,48.230683 C21.0358155,49.1905062 21.6846737,49.9218703 22.4456711,50.4251443 C23.2060537,50.9284182 23.9727072,51.1796248 24.744894,51.1796248 C25.5170807,51.1796248 26.1840139,51.121096 26.7459396,51.0046532 C27.3072505,50.8875956 27.8338868,50.7116403 28.3256025,50.477771 C28.5362325,48.9090515 29.1097164,47.7039238 30.0455624,46.8615271 C28.7116959,46.721353 27.5124702,46.5102313 26.4472706,46.2295144 C25.3826858,45.9484285 24.2825656,45.4922482 23.1476478,44.8597436 C22.0121153,44.2280998 21.0701212,43.44374 20.3214198,42.5080169 C19.5725954,41.571802 18.9580429,40.3426971 18.4786232,38.821809 C17.9989575,37.300306 17.7590632,35.5451796 17.7590632,33.5559381 C17.7590632,30.7235621 18.6837199,28.3133066 20.5326645,26.3238191 C19.6665366,24.1944035 19.7483048,21.8072644 20.778215,19.1626478 C21.4569523,18.951772 22.4635002,19.1100211 23.7973667,19.6364115 C25.1314792,20.1630477 26.1082708,20.6141868 26.7287253,20.9882301 C27.3491798,21.3621504 27.8463057,21.6790175 28.2208409,21.9360032 C30.3978419,21.3277217 32.644438,21.0235195 34.9612442,21.0235195 C37.2780503,21.0235195 39.5251383,21.3277217 41.7022622,21.9360032 L43.0362517,21.0938524 C43.9484895,20.5319267 45.0257392,20.0169716 46.2654186,19.5488642 C47.5058357,19.0810026 48.4543466,18.9521409 49.1099676,19.1630167 C50.1627483,21.8077563 50.2565666,24.1947724 49.3901927,26.324188 C51.2390143,28.3136755 52.1640399,30.7245457 52.1640399,33.556307 C52.1640399,35.5455485 51.9232849,37.3062081 51.444357,38.8393922 C50.9648143,40.3728223 50.3449746,41.6006975 49.5845919,42.5256002 C48.8233486,43.4503799 47.8753296,44.2285916 46.7404118,44.8601125 C45.6052481,45.4921252 44.504759,45.9483056 43.4401742,46.2293914 C42.3750975,46.5104772 41.1758719,46.7217219 39.8420054,46.8621419 C41.0585683,47.9149226 41.6669728,49.5767225 41.6669728,51.846804 L41.6669728,59.2535257 C41.6669728,59.6742937 41.8132948,60.0255895 42.1061847,60.3063064 C42.3987058,60.5865315 42.8606653,60.6690374 43.492678,60.5516109 C48.922946,58.7498829 53.3521992,55.5026409 56.7806837,50.810008 C60.2087994,46.117744 61.923472,40.8347817 61.923472,34.9597686 C61.9222424,30.0695396 60.7162539,25.5590099 58.3067362,21.4281798 Z"/></symbol>
+  </svg>
+
+  <div id="progress"></div>
+  <div id="glow"></div>
+
+  <main class="wrap">
+
+    <div class="top mono reveal">
+      <span class="brand"><span class="muted">&lt;</span>andrey<span class="dot-accent">.</span>dev<span class="muted">/&gt;</span></span>
+      <span class="status"><span class="dot"></span> disponível para projetos</span>
+    </div>
+
+    <!-- ===== EDITE AQUI: nome, frase e botão de WhatsApp ===== -->
+    <section class="hero">
+      <!-- o título é digitado pelo JS; sem JS, aparece direto -->
+      <h1 class="mono" id="h1" data-text="Andrey.dev">Andrey<span class="dot-accent">.</span>dev</h1>
+      <p class="tagline">Desenvolvedor Full Stack. Do site simples ao sistema sob medida.</p>
+
+      <!-- frase rotativa: edite a lista "items" no final do arquivo -->
+      <p class="rotator mono" id="rot" aria-live="off"><span class="prompt">&gt;</span><span id="rotText">sites e landing pages</span></p>
+
+      <!-- WhatsApp: troque 5511952924981 por 55 + DDD + número (só dígitos). Ex.: 5511999998888 -->
+      <div class="actions reveal">
+        <a class="btn primary" target="_blank" rel="noopener"
+           href="https://wa.me/5511952924981?text=Ol%C3%A1!%20Vi%20seu%20site%20e%20quero%20pedir%20um%20or%C3%A7amento.">
+          <svg aria-hidden="true"><use href="#wa"/></svg> Pedir orçamento
+        </a>
+        <a class="btn" href="#projetos">Ver projetos ↓</a>
+      </div>
+    </section>
+
+    <!-- stack em loop: edite à vontade -->
+    <div class="ticker reveal" aria-label="Tecnologias">
+      <div class="ticker-track mono">
+        <span><b>›</b>Java</span><span><b>›</b>JavaScript</span><span><b>›</b>HTML</span><span><b>›</b>CSS</span>
+        <span><b>›</b>Firebase</span><span><b>›</b>Android</span><span><b>›</b>Git</span><span><b>›</b>GitHub</span>
+        <!-- repetição para o loop ficar contínuo (não remova) -->
+        <span><b>›</b>Java</span><span><b>›</b>JavaScript</span><span><b>›</b>HTML</span><span><b>›</b>CSS</span>
+        <span><b>›</b>Firebase</span><span><b>›</b>Android</span><span><b>›</b>Git</span><span><b>›</b>GitHub</span>
+      </div>
+    </div>
+
+    <!-- ===== VITRINE: copie um bloco <a class="card"> por projeto e troque href="#" pelo link ===== -->
+    <section id="projetos">
+      <div class="section-title reveal">
+        <h2>projetos</h2>
+        <small class="mono">passe o mouse nos cards</small>
+      </div>
+
+      <div class="showcase">
+        <a class="card reveal" target="_blank" rel="noopener" href="https://serra-imoveis-website-4tlb7mkzc-andrey-c951.vercel.app/">
+          <span class="tag mono">site + painel admin</span>
+          <h3>Serra Imóveis</h3>
+          <p>Site para imobiliária com painel administrativo para cadastrar imóveis com fotos.</p>
+          <span class="go mono">abrir projeto →</span>
+        </a>
+        <a class="card reveal" target="_blank" rel="noopener" href="https://andreyvid.github.io/maxprogress-site/">
+          <span class="tag mono">app android</span>
+          <h3>MaxProgress</h3>
+          <p>Diário de treino: registra carga e repetições e mostra recorde pessoal e evolução por exercício.</p>
+          <span class="go mono">abrir projeto →</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== CONTATOS ===== -->
+    <section>
+      <div class="section-title reveal">
+        <h2>contato</h2>
+        <small class="mono">vamos conversar</small>
+      </div>
+      <div class="links">
+        <a class="link reveal" target="_blank" rel="noopener" href="https://github.com/Andreyvid">
+          <span class="ico"><svg aria-hidden="true"><use href="#gh"/></svg></span>
+          <span><span class="t">GitHub</span><br><span class="d">github.com/Andreyvid</span></span>
+        </a>
+        <!-- EDITE AQUI: seu LinkedIn -->
+        <a class="link reveal" target="_blank" rel="noopener" href="https://www.linkedin.com/in/andreyvid-dutra">
+          <span class="ico"><svg aria-hidden="true"><use href="#li"/></svg></span>
+          <span><span class="t">LinkedIn</span><br><span class="d">Experiência e currículo</span></span>
+        </a>
+        <!-- EDITE AQUI: mesmo número do botão de cima -->
+        <a class="link reveal" target="_blank" rel="noopener" href="https://wa.me/5511952924981">
+          <span class="ico"><svg aria-hidden="true"><use href="#wa"/></svg></span>
+          <span><span class="t">WhatsApp</span><br><span class="d">Resposta rápida</span></span>
+        </a>
+      </div>
+    </section>
+
+    <footer class="mono reveal">© <span id="year"></span> Andrey.dev</footer>
+  </main>
+
+<script type="module">
+  document.getElementById("year").textContent = new Date().getFullYear();
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- digitação: título + frase rotativa ---------- */
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const h1 = document.getElementById("h1");
+  const rotText = document.getElementById("rotText");
+  const cursor = document.createElement("span");
+  cursor.className = "cursor";
+
+  // >>> EDITE AQUI: as "coisinhas que a gente faz" <<<
+  const items = [
+    "sites e landing pages",
+    "sites com painel administrativo",
+    "sistemas de agendamento online",
+    "integrações entre sistemas",
+  ];
+
+  const rotNode = document.createTextNode("");
+
+  (async () => {
+    // 1) título digitado uma vez
+    const t1 = h1.dataset.text;            // "Andrey.dev"
+    const d = t1.indexOf(".");
+    const pre = document.createTextNode("");
+    const dotEl = document.createElement("span");
+    dotEl.className = "dot-accent";
+    const post = document.createTextNode("");
+    h1.textContent = "";
+    h1.append(pre, dotEl, post, cursor);
+    rotText.textContent = "";
+    await sleep(300);
+    for (let k = 1; k <= t1.length; k++) {
+      pre.data = t1.slice(0, Math.min(k, d));
+      dotEl.textContent = k > d ? "." : "";
+      post.data = k > d + 1 ? t1.slice(d + 1, k) : "";
+      await sleep(90);
+    }
+    await sleep(350);
+
+    // 2) o cursor vai para a frase rotativa: digita, espera, apaga, próxima (em loop)
+    rotText.append(rotNode, cursor);
+    let i = 0;
+    while (true) {
+      const s = items[i % items.length];
+      for (let k = 1; k <= s.length; k++) { rotNode.data = s.slice(0, k); await sleep(55); }
+      await sleep(1600);
+      for (let k = s.length - 1; k >= 0; k--) { rotNode.data = s.slice(0, k); await sleep(26); }
+      await sleep(350);
+      i++;
+    }
+  })();
+
+  /* ---------- brilho do fundo segue o mouse ---------- */
+  const glow = document.getElementById("glow");
+  const moveGlow = (x, y) => { glow.style.transform = `translate(${x - 240}px, ${y - 240}px)`; };
+  moveGlow(window.innerWidth / 2, window.innerHeight * 0.25);
+  window.addEventListener("pointermove", (e) => moveGlow(e.clientX, e.clientY), { passive: true });
+
+  /* ---------- Motion: se não carregar, a página continua normal ---------- */
+  try {
+    const { animate, inView, scroll } = await import("https://cdn.jsdelivr.net/npm/motion@latest/+esm");
+
+    if (!reduce) {
+      document.documentElement.classList.add("motion-ready");
+
+      inView(".reveal", (el) => {
+        animate(el, { opacity: [0, 1], y: [24, 0] }, { duration: 0.7, ease: [0.22, 1, 0.36, 1] });
+      }, { margin: "0px 0px -8% 0px" });
+
+      scroll(animate("#progress", { scaleX: [0, 1] }, { ease: "linear" }));
+
+      // botões e links: efeito magnético com mola
+      document.querySelectorAll(".btn, .link").forEach((el) => {
+        el.addEventListener("pointermove", (e) => {
+          const r = el.getBoundingClientRect();
+          animate(el, { x: (e.clientX - r.left - r.width / 2) * 0.12, y: (e.clientY - r.top - r.height / 2) * 0.2 },
+            { type: "spring", stiffness: 300, damping: 20 });
+        });
+        el.addEventListener("pointerleave", () => animate(el, { x: 0, y: 0 }, { type: "spring", stiffness: 300, damping: 18 }));
+      });
+
+      // vitrine: inclinação 3D + brilho que segue o cursor
+      document.querySelectorAll(".card").forEach((card) => {
+        card.addEventListener("pointermove", (e) => {
+          const r = card.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
+          card.style.setProperty("--mx", `${px * 100}%`);
+          card.style.setProperty("--my", `${py * 100}%`);
+          animate(card, { rotateY: (px - 0.5) * 10, rotateX: (0.5 - py) * 10, y: -4 }, { type: "spring", stiffness: 250, damping: 22 });
+        });
+        card.addEventListener("pointerleave", () => animate(card, { rotateX: 0, rotateY: 0, y: 0 }, { type: "spring", stiffness: 250, damping: 20 }));
+      });
+    }
+  } catch (err) {
+    console.warn("Motion não carregou:", err);
+  }
+</script>
+</body>
+</html>
